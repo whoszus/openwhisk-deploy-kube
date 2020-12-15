@@ -248,16 +248,19 @@ nginx:
 
 # Controller configurations
 controller:
-  imageName: "openwhisk/controller"
-  imageTag: "ed3f76e"
+  imageName: "tinker.siat.ac.cn/tinker/controller"
+  imageTag: "tk00"
+  # imageName: "openwhisk/controller"
+  # imageTag: "ed3f76e"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
   port: 8080
-  options: "-Dakka.http.server.parsing.max-content-length=500m -Dakka.http.client.parsing.max-chunk-size=500m -Dakka.http.client.parsing.max-content-length=500m -Dakka.http.client.parsing.max-to-strict-bytes=500m"
+  options: ""
   jvmHeapMB: "4096"
   jvmOptions: ""
   loglevel: "INFO"
+  whiskconfigFile: "whiskconfig.conf"
 
 # Invoker configurations
 invoker:
