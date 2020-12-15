@@ -54,7 +54,7 @@ whisk:
     apiHostProto: "https"
     type: NodePort
     annotations:
-      nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+      nginx.ingress.kubernetes.io/proxy-body-size: 200m
     domain: "domain"
     tls:
       enabled: false
@@ -70,10 +70,10 @@ whisk:
     guest: "23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP"
   systemNameSpace: "/whisk.system"
   limits:
-    actionsInvokesPerminute: 60
-    actionsInvokesConcurrent: 30
-    triggersFiresPerminute: 60
-    actionsSequenceMaxlength: 50
+    actionsInvokesPerminute: 102400
+    actionsInvokesConcurrent: 2048
+    triggersFiresPerminute: 102400
+    actionsSequenceMaxlength: 64
     actions:
       time:
         min: "100ms"
@@ -93,7 +93,7 @@ whisk:
         std: "10m"
     activation:
       payload:
-        max: "1048576"
+        max: "1048576000"
   loadbalancer:
     blackboxFraction: "10%"
     timeoutFactor: 2
@@ -248,16 +248,19 @@ nginx:
 
 # Controller configurations
 controller:
-  imageName: "openwhisk/controller"
-  imageTag: "ed3f76e"
+  imageName: "tinker.siat.ac.cn/tinker/controller"
+  imageTag: "tk00"
+  # imageName: "openwhisk/controller"
+  # imageTag: "ed3f76e"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
   port: 8080
   options: ""
-  jvmHeapMB: "1024"
+  jvmHeapMB: "4096"
   jvmOptions: ""
   loglevel: "INFO"
+  whiskconfigFile: "whiskconfig.conf"
 
 # Invoker configurations
 invoker:
@@ -265,7 +268,6 @@ invoker:
   imageTag: "ed3f76e"
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
-  runtimeDeleteTimeout: "30 seconds"
   port: 8080
   options: ""
   jvmHeapMB: "512"
@@ -353,7 +355,7 @@ grafana:
 # Metrics
 metrics:
   # set true to enable prometheus exporter
-  prometheusEnabled: false
+  prometheusEnabled: true
   # passing prometheus-enabled by a config file, required by openwhisk
   whiskconfigFile: "whiskconfig.conf"
   # set true to enable Kamon
@@ -361,7 +363,7 @@ metrics:
   # set true to enable Kamon tags
   kamonTags: false
   # set true to enable user metrics
-  userMetricsEnabled: false
+  userMetricsEnabled: true
 
 # Configuration of OpenWhisk event providers
 providers:
@@ -398,10 +400,6 @@ providers:
     restartPolicy: "Always"
     apiPort: 8080
     dbPrefix: "kp"
-
-busybox:
-  imageName: "busybox"
-  imageTag: "latest"
 
 
 # Used to define pod affinity and anti-affinity for the Kubernetes scheduler.
@@ -665,6 +663,11 @@ elasticsearch:
   indexPattern: "openwhisk-%s"
   username: "admin"
   password: "admin"
-
-akka:
-  actorSystemTerminateTimeout: "30 s"
+  
+akka.http:
+  server:
+    parsing.max-content-length: 500m
+  client: 
+    parsing.max-chunk-size: 500m
+    parsing.max-content-length: 500m
+    parsing.max-to-strict-bytes: 500m  
