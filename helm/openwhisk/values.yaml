@@ -54,12 +54,7 @@ whisk:
     apiHostProto: "https"
     type: NodePort
     annotations:
-      nginx.ingress.kubernetes.io/proxy-body-size: 500m
-      nginx.ingress.kubernetes.io/proxy-read-timeout: 75s
-      nginx.ingress.kubernetes.io/proxy-connect-timeout: 90s
-      nginx.ingress.kubernetes.io/proxy-next-upstream-timeout: 90s
-      nginx.ingress.kubernetes.io/proxy-send-timeout: 90s
-
+      nginx.ingress.kubernetes.io/proxy-body-size: 200m
     domain: "domain"
     tls:
       enabled: false
@@ -98,7 +93,7 @@ whisk:
         std: "10m"
     activation:
       payload:
-        max: "1048576"
+        max: "1048576000"
   loadbalancer:
     blackboxFraction: "10%"
     timeoutFactor: 2
@@ -259,8 +254,8 @@ controller:
   replicaCount: 1
   restartPolicy: "Always"
   port: 8080
-  options: ""
-  jvmHeapMB: "1024"
+  options: "-Dakka.http.server.parsing.max-content-length=500m -Dakka.http.client.parsing.max-chunk-size=500m -Dakka.http.client.parsing.max-content-length=500m -Dakka.http.client.parsing.max-to-strict-bytes=500m"
+  jvmHeapMB: "4096"
   jvmOptions: ""
   loglevel: "INFO"
 
@@ -665,3 +660,11 @@ elasticsearch:
   indexPattern: "openwhisk-%s"
   username: "admin"
   password: "admin"
+  
+akka.http:
+  server:
+    parsing.max-content-length: 500m
+  client: 
+    parsing.max-chunk-size: 500m
+    parsing.max-content-length: 500m
+    parsing.max-to-strict-bytes: 500m  
