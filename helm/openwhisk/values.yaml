@@ -54,7 +54,7 @@ whisk:
     apiHostProto: "https"
     type: NodePort
     annotations:
-      nginx.ingress.kubernetes.io/proxy-body-size: 200m
+      nginx.ingress.kubernetes.io/proxy-body-size: "200m"
     domain: "domain"
     tls:
       enabled: false
@@ -260,7 +260,6 @@ controller:
   jvmHeapMB: "4096"
   jvmOptions: ""
   loglevel: "INFO"
-  whiskconfigFile: "whiskconfig.conf"
 
 # Invoker configurations
 invoker:
@@ -268,6 +267,7 @@ invoker:
   imageTag: "ed3f76e"
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
+  runtimeDeleteTimeout: "30 seconds"
   port: 8080
   options: ""
   jvmHeapMB: "512"
@@ -355,7 +355,7 @@ grafana:
 # Metrics
 metrics:
   # set true to enable prometheus exporter
-  prometheusEnabled: true
+  prometheusEnabled: false
   # passing prometheus-enabled by a config file, required by openwhisk
   whiskconfigFile: "whiskconfig.conf"
   # set true to enable Kamon
@@ -363,7 +363,7 @@ metrics:
   # set true to enable Kamon tags
   kamonTags: false
   # set true to enable user metrics
-  userMetricsEnabled: true
+  userMetricsEnabled: false
 
 # Configuration of OpenWhisk event providers
 providers:
@@ -400,6 +400,10 @@ providers:
     restartPolicy: "Always"
     apiPort: 8080
     dbPrefix: "kp"
+
+busybox:
+  imageName: "busybox"
+  imageTag: "latest"
 
 
 # Used to define pod affinity and anti-affinity for the Kubernetes scheduler.
@@ -663,11 +667,6 @@ elasticsearch:
   indexPattern: "openwhisk-%s"
   username: "admin"
   password: "admin"
-  
-akka.http:
-  server:
-    parsing.max-content-length: 500m
-  client: 
-    parsing.max-chunk-size: 500m
-    parsing.max-content-length: 500m
-    parsing.max-to-strict-bytes: 500m  
+
+akka:
+  actorSystemTerminateTimeout: "30 s"
