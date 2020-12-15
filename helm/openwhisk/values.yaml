@@ -54,7 +54,12 @@ whisk:
     apiHostProto: "https"
     type: NodePort
     annotations:
-      nginx.ingress.kubernetes.io/proxy-body-size: "500m"
+      nginx.ingress.kubernetes.io/proxy-body-size: 500m
+      nginx.ingress.kubernetes.io/proxy-read-timeout: 75s
+      nginx.ingress.kubernetes.io/proxy-connect-timeout: 90s
+      nginx.ingress.kubernetes.io/proxy-next-upstream-timeout: 90s
+      nginx.ingress.kubernetes.io/proxy-send-timeout: 90s
+
     domain: "domain"
     tls:
       enabled: false
